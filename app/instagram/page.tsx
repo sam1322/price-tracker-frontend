@@ -1,7 +1,6 @@
 'use client';
 
 import apiClient, { ApiResponse } from '@/constants/apiClient';
-import { BASEURL } from '@/constants/path';
 import { useState } from 'react';
 
 interface InstagramResponse {
@@ -29,6 +28,7 @@ export default function InstagramDownloaderPage() {
     try {
       console.log("postUrl", postUrl)
       // Step 1: Use the Axios instance (no need for full URLs)
+      // @ts-expect-error fix the type error later
       const { videoUrl } = await apiClient.post<ApiResponse<InstagramResponse>>('/instagram/download', {
         url: postUrl
       });
