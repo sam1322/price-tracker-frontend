@@ -31,7 +31,8 @@ apiClient.interceptors.request.use((config) => {
 // Response interceptor with TypeScript
 apiClient.interceptors.response.use(
     (response) => {
-        return response.data; // Return only the data part
+        return response
+        // return response.data; // Return only the data part
     },
     (error: AxiosError<ApiResponse>) => {
         const errorMessage = error.response?.data?.message ||
