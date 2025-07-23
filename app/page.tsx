@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { BASEURL } from '@/constants/path';
 
 export default function SignInPage() {
   const [isSignUp, setIsSignUp] = useState(false);
@@ -23,7 +24,7 @@ export default function SignInPage() {
         ? { email, password, name }
         : { email, password };
 
-      const response = await fetch(`http://localhost:3001${endpoint}`, {
+      const response = await fetch(`${BASEURL}${endpoint}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include', // Important for cookies
@@ -147,7 +148,7 @@ export default function SignInPage() {
 
             <div className="grid grid-cols-2 gap-3">
               <a
-                href="http://localhost:3001/auth/google"
+                href={`${BASEURL}/auth/google`}
                 className="flex items-center justify-center rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition-all duration-200"
               >
                 <svg className="mr-2 h-5 w-5" viewBox="0 0 24 24">
@@ -160,7 +161,7 @@ export default function SignInPage() {
               </a>
 
               <a
-                href="http://localhost:3001/auth/github"
+                href={`${BASEURL}/auth/github`}
                 className="flex items-center justify-center rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition-all duration-200"
               >
                 <svg className="mr-2 h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
