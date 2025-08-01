@@ -1,3 +1,43 @@
+# Price Tracker - Amazon & Flipkart
+
+A comprehensive price tracking application that monitors product prices from Amazon and Flipkart, sends alerts on price drops, and provides detailed analytics.
+<img width="1902" height="1911" alt="Create-Next-App-07-24-2025_05_24_PM-1" src="https://github.com/user-attachments/assets/29a2372e-87e1-4d9e-8686-bdb533e3d9ba" />
+
+
+## Features
+
+- 🔍 **Product Search**: Search products across Amazon and Flipkart simultaneously
+- 📊 **Price Comparison**: Compare prices between vendors
+- 📈 **Price History**: Track price changes over time with interactive charts
+- 🔔 **Price Alerts**: Get notified when prices drop below your target
+- ⏰ **Automated Tracking**: Prices are checked every 6 hours automatically
+- 📱 **Responsive Design**: Works seamlessly on desktop and mobile devices
+- 📊 **Analytics Dashboard**: View statistics and trends
+
+## Tech Stack
+
+### Backend
+- NestJS with TypeScript
+- Prisma ORM with PostgreSQL
+- Playwright for web scraping
+- Scheduled jobs for automated tracking
+
+### Frontend
+- Next.js 15 with TypeScript
+- Tailwind CSS for styling
+- Recharts for data visualization
+- Axios for API communication
+
+## Prerequisites
+
+- Node.js 18+
+- PostgreSQL 15+
+- npm or yarn
+
+
+
+
+
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
 ## Getting Started
