@@ -1,3 +1,5 @@
+/* eslint-disable */
+
 import apiClient from "@/constants/apiClient";
 
 export interface SearchResult {

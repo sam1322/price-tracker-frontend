@@ -10,7 +10,7 @@ export function Layout({ children }: LayoutProps) {
     const pathname = usePathname();
 
     const navigation = [
-        { name: 'Search', href: '/dashboard', icon: Home },
+        { name: 'Search', href: '/', icon: Home },
         { name: 'My Trackers', href: '/tracker', icon: Package },
         { name: 'Alerts', href: '/alerts', icon: Bell },
         { name: 'Statistics', href: '/stats', icon: BarChart3 },

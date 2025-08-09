@@ -1,18 +1,14 @@
 'use client';
 
-import { useEffect, useState } from 'react';
-import { trackerService, Alert } from '@/lib/api/tracker.service';
-import { Bell, BellOff, TrendingDown, Check } from 'lucide-react';
+import { Alert, trackerService } from '@/lib/api/tracker.service';
+import { Bell, BellOff, Check, TrendingDown } from 'lucide-react';
 import Link from 'next/link';
+import { useEffect, useState } from 'react';
 
 export default function AlertsPage() {
     const [alerts, setAlerts] = useState<Alert[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [showUnreadOnly, setShowUnreadOnly] = useState(false);
-
-    useEffect(() => {
-        loadAlerts();
-    }, [showUnreadOnly]);
 
     const loadAlerts = async () => {
         setIsLoading(true);
@@ -25,6 +21,12 @@ export default function AlertsPage() {
             setIsLoading(false);
         }
     };
+
+
+    useEffect(() => {
+        loadAlerts();
+    }, [showUnreadOnly]);
+
 
     const markAsRead = async (alertId: string) => {
         try {

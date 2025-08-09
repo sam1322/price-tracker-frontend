@@ -5,7 +5,7 @@ import { ProductCard } from '@/components/search/ProductCard';
 import { SearchBar } from '@/components/search/SearchBar';
 import CreateTrackerForm from '@/components/tracker/CreateTrackerForm';
 import { Product, SearchResult, trackerService } from '@/lib/api/tracker.service';
-import { Loader2, Plus } from 'lucide-react';
+import { Loader2 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 
@@ -67,7 +67,6 @@ export default function HomePage() {
       setIsCreatingTracker(false);
     }
   };
-  console.log("hey")
 
   return (
     <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">

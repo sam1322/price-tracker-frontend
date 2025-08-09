@@ -11,7 +11,7 @@ export default function RootLayout({ children }: LayoutProps) {
     const pathname = usePathname();
 
     const navigation = [
-        { name: 'Search', href: '/price-tracker/dashboard', icon: Home },
+        { name: 'Search', href: '/price-tracker', icon: Home },
         { name: 'My Trackers', href: '/price-tracker/tracker', icon: Package },
         { name: 'Alerts', href: '/price-tracker/alerts', icon: Bell },
         { name: 'Statistics', href: '/price-tracker/stats', icon: BarChart3 },
@@ -23,7 +23,7 @@ export default function RootLayout({ children }: LayoutProps) {
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="flex items-center justify-between h-16">
                         <div className="flex items-center">
-                            <Link href="/price-tracker/dashboard" className="text-2xl font-bold text-gray-900">Price Tracker</Link>
+                            <Link href="/price-tracker" className="text-2xl font-bold text-gray-900">Price Tracker</Link>
                         </div>
 
                         <nav className="hidden md:flex space-x-8">

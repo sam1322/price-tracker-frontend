@@ -1,19 +1,16 @@
 'use client';
 
-import { useEffect, useState } from 'react';
 import { TrackedItemCard } from '@/components/tracker/TrackedItemCard';
-import { trackerService, TrackedItem } from '@/lib/api/tracker.service';
-import { Plus, Loader2 } from 'lucide-react';
+import { TrackedItem, trackerService } from '@/lib/api/tracker.service';
+import { Loader2, Plus } from 'lucide-react';
 import Link from 'next/link';
+import { useEffect, useState } from 'react';
 
 export default function TrackerPage() {
   const [trackedItems, setTrackedItems] = useState<TrackedItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [filter, setFilter] = useState<'all' | 'active' | 'inactive'>('all');
 
-  useEffect(() => {
-    loadTrackedItems();
-  }, [filter]);
 
   const loadTrackedItems = async () => {
     setIsLoading(true);
@@ -28,7 +25,10 @@ export default function TrackerPage() {
     }
   };
 
-  console.log(trackedItems, "trackeditems")
+
+  useEffect(() => {
+    loadTrackedItems();
+  }, [filter]);
 
   const handleDelete = async (id: string) => {
     if (confirm('Are you sure you want to delete this tracker?')) {
@@ -49,8 +49,8 @@ export default function TrackerPage() {
           <button
             onClick={() => setFilter('all')}
             className={`px-4 py-2 rounded-md ${filter === 'all'
-                ? 'bg-blue-600 text-white'
-                : 'bg-white text-gray-700 hover:bg-gray-50'
+              ? 'bg-blue-600 text-white'
+              : 'bg-white text-gray-700 hover:bg-gray-50'
               }`}
           >
             All
@@ -58,8 +58,8 @@ export default function TrackerPage() {
           <button
             onClick={() => setFilter('active')}
             className={`px-4 py-2 rounded-md ${filter === 'active'
-                ? 'bg-blue-600 text-white'
-                : 'bg-white text-gray-700 hover:bg-gray-50'
+              ? 'bg-blue-600 text-white'
+              : 'bg-white text-gray-700 hover:bg-gray-50'
               }`}
           >
             Active
@@ -67,8 +67,8 @@ export default function TrackerPage() {
           <button
             onClick={() => setFilter('inactive')}
             className={`px-4 py-2 rounded-md ${filter === 'inactive'
-                ? 'bg-blue-600 text-white'
-                : 'bg-white text-gray-700 hover:bg-gray-50'
+              ? 'bg-blue-600 text-white'
+              : 'bg-white text-gray-700 hover:bg-gray-50'
               }`}
           >
             Inactive
@@ -76,7 +76,7 @@ export default function TrackerPage() {
         </div>
 
         <Link
-          href="/price-tracker/dashboard"
+          href="/price-tracker"
           className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
         >
           <Plus className="w-4 h-4" />
@@ -93,7 +93,7 @@ export default function TrackerPage() {
         <div className="text-center py-12">
           <p className="text-gray-600 mb-4">No trackers found</p>
           <Link
-            href="/price-tracker/dashboard"
+            href="/price-tracker"
             className="text-blue-600 hover:text-blue-800 font-medium"
           >
             Create your first tracker →

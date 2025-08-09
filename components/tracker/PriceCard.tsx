@@ -1,9 +1,11 @@
-import { TrendingUp, TrendingDown, Clock, ShoppingBag } from 'lucide-react';
-import { Card, CardContent } from '@/components/ui/card';
+/* eslint-disable */
+
 import { Badge } from '@/components/ui/badge';
-import Link from 'next/link';
-import Image from 'next/image';
+import { Card, CardContent } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
+import { Clock, ShoppingBag, TrendingDown, TrendingUp } from 'lucide-react';
+import Image from 'next/image';
+import Link from 'next/link';
 
 interface PriceCardProps {
   productId: string;
@@ -20,7 +22,7 @@ interface PriceCardProps {
 }
 
 export const PriceCard = ({
-  productId,
+  // productId,
   title,
   currentPrice,
   vendor,

@@ -139,7 +139,7 @@ export default function StatisticsPage() {
               <CartesianGrid strokeDasharray="3 3" />
               <XAxis dataKey="name" />
               <YAxis />
-              <Tooltip formatter={(value: any) => `${value.toFixed(2)}%`} />
+              <Tooltip formatter={(value: number) => `${value.toFixed(2)}%`} />
               <Bar dataKey="successRate" fill="#82ca9d" />
             </BarChart>
           </ResponsiveContainer>
@@ -180,8 +180,8 @@ export default function StatisticsPage() {
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <span className={`inline-flex px-2 py-1 text-xs font-medium rounded ${scrape.vendor === 'AMAZON'
-                        ? 'bg-orange-100 text-orange-800'
-                        : 'bg-blue-100 text-blue-800'
+                      ? 'bg-orange-100 text-orange-800'
+                      : 'bg-blue-100 text-blue-800'
                       }`}>
                       {scrape.vendor}
                     </span>

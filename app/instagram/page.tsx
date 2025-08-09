@@ -26,7 +26,6 @@ export default function InstagramDownloaderPage() {
     setError('');
 
     try {
-      console.log("postUrl", postUrl)
       // Step 1: Use the Axios instance (no need for full URLs)
       // @ts-expect-error fix the type error later
       const { videoUrl } = await apiClient.post<ApiResponse<InstagramResponse>>('/instagram/download', {
@@ -60,8 +59,6 @@ export default function InstagramDownloaderPage() {
     setIsLoading(false);
     setError('Failed to load video');
   };
-
-  console.log("postUrl", postUrl)
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-pink-50 to-purple-100 py-12 px-4">

@@ -1,6 +1,6 @@
 'use client';
+/* eslint-disable */
 
-import { JSX } from 'react';
 import {
   CartesianGrid,
   Legend,

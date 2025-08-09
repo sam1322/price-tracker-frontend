@@ -1,13 +1,14 @@
 'use client';
+/* eslint-disable */
 
 import { PriceHistoryChart } from '@/components/charts/PriceHistoryChart';
 import { PriceCard } from '@/components/tracker/PriceCard';
 import { trackerService } from '@/lib/api/tracker.service';
-import { ArrowLeft, RefreshCw, TrendingDown, TrendingUp } from 'lucide-react';
+import { TrendingDown, TrendingUp } from 'lucide-react';
 import Image from 'next/image';
-import Link from 'next/link';
 import { useParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
+
 
 export default function TrackerDetailPage() {
   const params = useParams();
@@ -35,6 +36,7 @@ export default function TrackerDetailPage() {
       setIsLoading(false);
     }
   };
+
 
   // const loadPriceHistory = async () => {
   //   setIsLoading(true);
@@ -119,15 +121,15 @@ export default function TrackerDetailPage() {
           </div>
         )}
       </div>
- 
+
       {/* Current Prices */}
       <div className="mb-8">
         <h2 className="text-2xl font-bold text-gray-900 mb-5">Current Prices</h2>
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          {trackerDetails.currentPrices.map((priceInfo) => {
+          {trackerDetails.currentPrices.map((priceInfo: any) => {
             // --- ✅ Efficiently find the trend data ONCE per item ---
             const trendInfo = trackerDetails.priceTrends.find(
-              (t) => t.productId === priceInfo.productId
+              (t: any) => t.productId === priceInfo.productId
             );
 
             return <PriceCard

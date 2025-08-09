@@ -1,5 +1,5 @@
 import { TrackedItem } from '@/lib/api/tracker.service';
-import { Bell, Package, TrendingDown, Trash2 } from 'lucide-react';
+import { Bell, Package, Trash2 } from 'lucide-react';
 import Link from 'next/link';
 
 interface TrackedItemCardProps {
