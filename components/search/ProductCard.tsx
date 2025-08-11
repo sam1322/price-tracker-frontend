@@ -40,13 +40,13 @@ export function ProductCard({ product, onSelect, isSelected }: ProductCardProps)
               {product.vendor}
             </span>
 
-            {product.rating && (
+            {product.rating ? (
               <div className="flex items-center gap-1">
                 <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
                 <span className="text-sm text-gray-600">{product.rating}</span>
-                {product.reviewCount ? <span className="text-sm text-gray-800">({product.reviewCount})</span> : null}
+                {product.reviewCount && product.reviewCount > 0 ? <span className="text-sm text-gray-800">({product.reviewCount})</span> : null}
               </div>
-            )}
+            ) : null}
           </div>
 
           <div className="flex items-baseline gap-2">
