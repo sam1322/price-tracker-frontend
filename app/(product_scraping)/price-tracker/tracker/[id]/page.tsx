@@ -183,7 +183,7 @@ export default function TrackerDetailPage() {
                       </p>
 
                       {/* --- ✅ Styled Price Trend "Pill" --- */}
-                      {trendInfo && (
+                      {trendInfo ? (
                         <div
                           className={`flex items-center gap-1 px-2 py-1 rounded-full text-xs font-semibold
                       ${trendInfo.trend === 'up' && 'bg-red-100 text-red-700'}
@@ -199,7 +199,7 @@ export default function TrackerDetailPage() {
                               : `${trendInfo.changePercent.toFixed(1)}%`}
                           </span>
                         </div>
-                      )}
+                      ) : null}
                     </div>
                     <p className="text-xs text-gray-400 mt-2 text-right">
                       Updated: {new Date(priceInfo.lastUpdated).toLocaleDateString()}

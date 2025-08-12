@@ -80,17 +80,17 @@ export const PriceCard = ({
             </div>
 
             {/* Trend Badge */}
-            {trend && trend.direction !== 'stable' && (
+            {trend && trend.direction !== 'stable' ? (
               <div className="absolute top-3 right-3">
                 <Badge
                   variant={getTrendColor() as any}
                   className="bg-background/90 backdrop-blur-sm flex items-center gap-1"
                 >
-                  {TrendIcon && <TrendIcon className="w-3 h-3" />}
+                  {TrendIcon ? <TrendIcon className="w-3 h-3" /> : null}
                   {trend.direction === 'up' ? '+' : '-'}{Math.abs(trend.changePercent).toFixed(1)}%
                 </Badge>
               </div>
-            )}
+            ) : null}
           </div>
 
           {/* Content */}
@@ -106,24 +106,24 @@ export const PriceCard = ({
                 <span className="text-3xl font-bold text-card-foreground">
                   {formatPrice(currentPrice)}
                 </span>
-                {trend && trend.direction !== 'stable' && (
+                {trend && trend.direction !== 'stable' ? (
                   <span className={`text-sm font-medium ${trend.direction === 'up' ? 'text-price-up' : 'text-price-down'
                     }`}>
                     {trend.direction === 'up' ? '↗' : '↘'}
                   </span>
-                )}
+                ) : null}
               </div>
 
               {/* Trend Details */}
-              {trend && trend.direction !== 'stable' && (
+              {trend && trend.direction !== 'stable' ? (
                 <div className={`flex items-center gap-1 text-sm ${trend.direction === 'up' ? 'text-price-up' : 'text-price-down'
                   }`}>
-                  {TrendIcon && <TrendIcon className="w-4 h-4" />}
+                  {TrendIcon ? <TrendIcon className="w-4 h-4" /> : null}
                   <span>
                     {trend.direction === 'up' ? 'Increased' : 'Decreased'} by {Math.abs(trend.changePercent).toFixed(2)}%
                   </span>
                 </div>
-              )}
+              ) : null}
             </div>
 
             {/* Last Updated */}

@@ -15,15 +15,15 @@ export function TrackedItemCard({ item, onDelete }: TrackedItemCardProps) {
           <h3 className="text-lg font-semibold text-gray-900">{item.name}</h3>
           <p className="text-sm text-gray-600 mt-1">{item.searchQuery}</p>
         </div>
-        
+
         <div className="flex items-center gap-2">
-          {item.unreadAlerts > 0 && (
+          {item.unreadAlerts > 0 ? (
             <div className="flex items-center gap-1 bg-red-100 text-red-800 px-2 py-1 rounded-full text-sm">
               <Bell className="w-4 h-4" />
               <span>{item.unreadAlerts}</span>
             </div>
-          )}
-          
+          ) : null}
+
           <button
             onClick={() => onDelete(item.id)}
             className="text-gray-400 hover:text-red-600 transition-colors"
@@ -32,7 +32,7 @@ export function TrackedItemCard({ item, onDelete }: TrackedItemCardProps) {
           </button>
         </div>
       </div>
-      
+
       <div className="grid grid-cols-3 gap-4 mb-4">
         <div>
           <p className="text-sm text-gray-600">Products</p>
@@ -41,7 +41,7 @@ export function TrackedItemCard({ item, onDelete }: TrackedItemCardProps) {
             {item.products.length}
           </p>
         </div>
-        
+
         <div>
           <p className="text-sm text-gray-600">Lowest Price</p>
           <p className="text-xl font-semibold">
@@ -50,7 +50,7 @@ export function TrackedItemCard({ item, onDelete }: TrackedItemCardProps) {
               : '-'}
           </p>
         </div>
-        
+
         <div>
           <p className="text-sm text-gray-600">Target Price</p>
           <p className="text-xl font-semibold">
@@ -60,12 +60,12 @@ export function TrackedItemCard({ item, onDelete }: TrackedItemCardProps) {
           </p>
         </div>
       </div>
-      
+
       <div className="flex justify-between items-center">
         <span className={`text-sm ${item.isActive ? 'text-green-600' : 'text-gray-500'}`}>
           {item.isActive ? 'Active' : 'Inactive'}
         </span>
-        
+
         <Link
           href={`/price-tracker/tracker/${item.id}`}
           className="text-blue-600 hover:text-blue-800 text-sm font-medium"
