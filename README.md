@@ -3,6 +3,7 @@
 A comprehensive price tracking application that monitors product prices from Amazon and Flipkart, sends alerts on price drops, and provides detailed analytics.
 
 🌐 Live Demo: [https://project.sam-tech.xyz/price-tracker](https://project.sam-tech.xyz/price-tracker)
+
 Backend Repo: [https://github.com/sam1322/price-tracker-backend](https://github.com/sam1322/price-tracker-backend)
 
 
