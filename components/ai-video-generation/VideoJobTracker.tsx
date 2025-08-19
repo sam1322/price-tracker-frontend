@@ -1,10 +1,10 @@
 // components/VideoJobTracker.tsx
 'use client';
 
-import { useEffect, useState } from 'react';
-import { motion } from 'motion/react';
-import { CheckCircle2, Circle, Loader2, AlertCircle, Play } from 'lucide-react';
 import { videoApi } from '@/lib/api/ai-video-generation.service';
+import { AlertCircle, CheckCircle2, Circle, Loader2, Play } from 'lucide-react';
+import { motion } from 'motion/react';
+import { useEffect, useState } from 'react';
 
 interface JobStatus {
     id: string;
@@ -25,30 +25,8 @@ export function VideoJobTracker({ jobId }: { jobId: string }) {
     const [isVideoModalOpen, setIsVideoModalOpen] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
-    // useEffect(() => {
-    //     const pollJob = async () => {
-    //         try {
-    //             const response = await fetch(`/api/videos/status/${jobId}`);
-    //             const data = await response.json();
-    //             setJob(data);
-
-    //             if (data.status === 'COMPLETED' || data.status === 'FAILED') {
-    //                 clearInterval(interval);
-    //             }
-    //         } catch (error) {
-    //             console.error('Failed to fetch job status:', error);
-    //         }
-    //     };
-
-    //     pollJob();
-    //     const interval = setInterval(pollJob, 2000);
-
-    //     return () => clearInterval(interval);
-    // }, [jobId]);
-
-    // if (!job) return null;
-
     useEffect(() => {
+        // eslint-disable-next-line prefer-const
         let intervalId: NodeJS.Timeout;
 
         const fetchJobStatus = async () => {
