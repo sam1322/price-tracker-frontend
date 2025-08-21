@@ -2,9 +2,10 @@
 'use client';
 
 import { videoApi } from '@/lib/api/ai-video-generation.service';
-import { AlertCircle, CheckCircle2, Circle, Loader2, Play } from 'lucide-react';
-import { motion } from 'motion/react';
+import { AlertCircle, CheckCircle2, Circle, Download, Loader2, Play, Share2 } from 'lucide-react';
+import { motion, AnimatePresence } from 'motion/react';
 import { useEffect, useState } from 'react';
+import { toast } from 'sonner';
 
 interface JobStatus {
     id: string;
@@ -13,12 +14,31 @@ interface JobStatus {
     error?: string;
 }
 
+// const statusSteps = [
+//     { key: 'GENERATING_SCRIPT', label: 'Writing Script', icon: '📝' },
+//     { key: 'GENERATING_ASSETS', label: 'Creating Visuals', icon: '🎨' },
+//     { key: 'RENDERING_VIDEO', label: 'Rendering Video', icon: '🎬' },
+//     { key: 'COMPLETED', label: 'Complete', icon: '✨' },
+// ];
+
 const statusSteps = [
+    { key: 'PENDING', label: 'Starting Up', icon: '⏳' },
     { key: 'GENERATING_SCRIPT', label: 'Writing Script', icon: '📝' },
+    { key: 'SCRIPT_GENERATED', label: 'Script Ready', icon: '✅' },
     { key: 'GENERATING_ASSETS', label: 'Creating Visuals', icon: '🎨' },
+    { key: 'ASSETS_GENERATED', label: 'Assets Ready', icon: '🖼️' },
     { key: 'RENDERING_VIDEO', label: 'Rendering Video', icon: '🎬' },
     { key: 'COMPLETED', label: 'Complete', icon: '✨' },
 ];
+
+
+// enum JobStatus {
+//     PENDING, GENERATING_SCRIPT
+//   SCRIPT_GENERATED, GENERATING_ASSETS
+//   ASSETS_GENERATED, RENDERING_VIDEO
+//   COMPLETED
+//   FAILED
+// }
 
 export function VideoJobTracker({ jobId }: { jobId: string }) {
     const [job, setJob] = useState<JobStatus | null>(null);
@@ -32,8 +52,8 @@ export function VideoJobTracker({ jobId }: { jobId: string }) {
         const fetchJobStatus = async () => {
             try {
                 const data = await videoApi.getJobStatus(jobId);
+                // const data = { status: "COMPLETED" }
                 setJob(data);
-                setError(null)
 
                 // Stop polling if job is complete or failed
                 if (data.status === 'COMPLETED' || data.status === 'FAILED') {
@@ -72,6 +92,23 @@ export function VideoJobTracker({ jobId }: { jobId: string }) {
 
 
     const currentStepIndex = statusSteps.findIndex(step => step.key === job.status);
+    // const currentStepIndex = (() => {
+    //     switch (job.status) {
+    //         case 'PENDING':
+    //         case 'GENERATING_SCRIPT':
+    //             return 0;
+    //         case 'SCRIPT_GENERATED':
+    //         case 'GENERATING_ASSETS':
+    //             return 1;
+    //         case 'ASSETS_GENERATED':
+    //         case 'RENDERING_VIDEO':
+    //             return 2;
+    //         case 'COMPLETED':
+    //             return 3;
+    //         default:
+    //             return -1;
+    //     }
+    // })();
 
     return (
         <>
@@ -143,7 +180,7 @@ export function VideoJobTracker({ jobId }: { jobId: string }) {
                 )}
 
                 {/* Success Message & Video Player */}
-                {job.status === 'COMPLETED' && job.videoUrl && (
+                {/* {job.status === 'COMPLETED' && job.videoUrl && (
                     <motion.div
                         initial={{ opacity: 0, y: 10 }}
                         animate={{ opacity: 1, y: 0 }}
@@ -158,7 +195,91 @@ export function VideoJobTracker({ jobId }: { jobId: string }) {
                             <span>Watch Your Video</span>
                         </button>
                     </motion.div>
-                )}
+                )} */}
+                {/* Success State */}
+                <AnimatePresence>
+                    {true ? (
+                        // {job.status === 'COMPLETED' && job.videoUrl ? (
+                        <motion.div
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            exit={{ opacity: 0, y: -20 }}
+                            transition={{ delay: 0.3 }}
+                            className="mt-8 space-y-6"
+                        >
+                            {/* Video Preview */}
+                            <div className="relative rounded-xl overflow-hidden bg-black/50 aspect-video">
+                                <video
+                                    src={job.videoUrl}
+                                    className="w-full h-full object-cover"
+                                    // poster={job.thumbnailUrl}
+                                    muted
+                                    loop
+                                    autoPlay
+                                />
+                                <button
+                                    onClick={() => setIsVideoModalOpen(true)}
+                                    className="absolute inset-0 flex items-center justify-center bg-black/30 hover:bg-black/20 transition group"
+                                >
+                                    <div className="bg-white/90 rounded-full p-4 group-hover:scale-110 transition">
+                                        <Play className="w-8 h-8 text-gray-900" />
+                                    </div>
+                                </button>
+                            </div>
+
+                            {/* Action Buttons */}
+                            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                                <motion.button
+                                    whileHover={{ scale: 1.02 }}
+                                    whileTap={{ scale: 0.98 }}
+                                    onClick={() => setIsVideoModalOpen(true)}
+                                    className="flex items-center justify-center space-x-2 py-3 bg-gradient-to-r from-purple-500 to-pink-500 text-white font-medium rounded-xl hover:shadow-lg transition"
+                                >
+                                    <Play className="w-5 h-5" />
+                                    <span>Watch Video</span>
+                                </motion.button>
+
+                                <motion.button
+                                    whileHover={{ scale: 1.02 }}
+                                    whileTap={{ scale: 0.98 }}
+                                    onClick={() => window.open(job.videoUrl, '_blank')}
+                                    className="flex items-center justify-center space-x-2 py-3 bg-white/10 hover:bg-white/20 text-white font-medium rounded-xl border border-white/20 transition"
+                                >
+                                    <Download className="w-5 h-5" />
+                                    <span>Download</span>
+                                </motion.button>
+
+                                <motion.button
+                                    whileHover={{ scale: 1.02 }}
+                                    whileTap={{ scale: 0.98 }}
+                                    onClick={() => {
+                                        navigator.clipboard.writeText(job.videoUrl ?? '');
+                                        toast.success('Video link copied successfully')
+
+                                        // navigator.clipboard.writeText(window.location.origin + '/video/' + job.id);
+                                        // You could add a toast notification here
+                                    }}
+                                    className="flex items-center justify-center space-x-2 py-3 bg-white/10 hover:bg-white/20 text-white font-medium rounded-xl border border-white/20 transition"
+                                >
+                                    <Share2 className="w-5 h-5" />
+                                    <span>Share</span>
+                                </motion.button>
+                            </div>
+
+                            {/* Success Message */}
+                            <motion.div
+                                initial={{ opacity: 0 }}
+                                animate={{ opacity: 1 }}
+                                transition={{ delay: 0.5 }}
+                                className="text-center"
+                            >
+                                <p className="text-green-400 text-sm">
+                                    ✨ Your AI video has been successfully generated!
+                                </p>
+                            </motion.div>
+                        </motion.div>
+                    ) : null}
+                </AnimatePresence>
             </div>
 
             {/* Video Modal */}
@@ -173,8 +294,7 @@ export function VideoJobTracker({ jobId }: { jobId: string }) {
 }
 
 
-
-// Video Modal Component
+// components/VideoJobTracker.tsx (continued)
 function VideoModal({ videoUrl, onClose }: { videoUrl: string; onClose: () => void }) {
     return (
         <motion.div
@@ -198,12 +318,26 @@ function VideoModal({ videoUrl, onClose }: { videoUrl: string; onClose: () => vo
                     className="w-full h-auto"
                 />
                 <div className="p-4 bg-white/5 flex justify-between items-center">
-                    <button
-                        onClick={() => window.open(videoUrl, '_blank')}
-                        className="text-white/70 hover:text-white transition text-sm"
-                    >
-                        Download Video
-                    </button>
+                    <div className="flex space-x-4">
+                        <button
+                            onClick={() => window.open(videoUrl, '_blank')}
+                            className="text-white/70 hover:text-white transition text-sm flex items-center space-x-2"
+                        >
+                            <Download className="w-4 h-4" />
+                            <span>Download</span>
+                        </button>
+                        <button
+                            onClick={() => {
+                                navigator.clipboard.writeText(videoUrl ?? '');
+                                toast.success('Video link copied successfully')
+                                // navigator.clipboard.writeText(`${window.location.origin}/video/${jobId}`);
+                            }}
+                            className="text-white/70 hover:text-white transition text-sm flex items-center space-x-2"
+                        >
+                            <Share2 className="w-4 h-4" />
+                            <span>Copy Link</span>
+                        </button>
+                    </div>
                     <button
                         onClick={onClose}
                         className="px-4 py-2 bg-white/10 hover:bg-white/20 text-white rounded-lg transition"
