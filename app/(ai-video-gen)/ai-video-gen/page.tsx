@@ -3,13 +3,18 @@
 import { RecentVideos } from '@/components/ai-video-generation/RecentVideos';
 import VideoGenerationForm from '@/components/ai-video-generation/VideoGenerationForm';
 import { VideoJobTracker } from '@/components/ai-video-generation/VideoJobTracker';
+import { VideoShowcase } from '@/components/ai-video-generation/VideoShowCase';
 import { videoApi } from '@/lib/api/ai-video-generation.service';
+import { Loader2, User } from 'lucide-react';
 import { motion } from 'motion/react';
+import Link from 'next/link';
 import { useEffect, useState } from 'react';
 
 export default function HomePage() {
   const [activeJobId, setActiveJobId] = useState<string | null>(null);
   const [loading, setLoading] = useState(false)
+  const [user, setUser] = useState(null);
+
 
   const fetchProcessingVideos = async () => {
     try {
@@ -26,10 +31,28 @@ export default function HomePage() {
       setLoading(false);
     }
   };
+  const fetchUser = () => {
+
+  }
   useEffect(() => {
+    // Check if user is logged in
+    // const savedUser = localStorage.getItem('user');
+    // if (savedUser) {
+    //   setUser(JSON.parse(savedUser));
+    // }
     fetchProcessingVideos()
   }, [])
 
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900 flex items-center justify-center">
+        <div className="text-center">
+          <Loader2 className="w-12 h-12 animate-spin text-white mx-auto mb-4" />
+          <p className="text-white/70">Loading your AI Video Studio...</p>
+        </div>
+      </div>
+    );
+  }
 
 
   return (
@@ -55,12 +78,32 @@ export default function HomePage() {
               </motion.div>
 
               <nav className="flex items-center space-x-6">
-                <a href="#" className="text-white/70 hover:text-white transition">Gallery</a>
-                <a href="#" className="text-white/70 hover:text-white transition">Pricing</a>
-                <a href="#" className="text-white/70 hover:text-white transition">API</a>
-                <button className="bg-white/10 hover:bg-white/20 text-white px-4 py-2 rounded-lg backdrop-blur transition">
-                  Sign In
-                </button>
+                <a href="#gallery" className="text-white/70 hover:text-white transition">Gallery</a>
+
+                {user ? (
+                  <div className="flex items-center space-x-3">
+                    <div className="flex items-center space-x-2 text-white/70">
+                      <User className="w-4 h-4" />
+                      <span className="text-sm">{user.email}</span>
+                    </div>
+                    <button
+                      onClick={() => {
+                        localStorage.removeItem('user');
+                        setUser(null);
+                      }}
+                      className="bg-white/10 hover:bg-white/20 text-white px-4 py-2 rounded-lg backdrop-blur transition text-sm"
+                    >
+                      Sign Out
+                    </button>
+                  </div>
+                ) : (
+                  <Link
+                    href="/auth/signin"
+                    className="bg-white/10 hover:bg-white/20 text-white px-4 py-2 rounded-lg backdrop-blur transition cursor-pointer"
+                  >
+                    Sign In
+                  </Link>
+                )}
               </nav>
             </div>
           </div>
@@ -71,7 +114,7 @@ export default function HomePage() {
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2 }}
+            transition={{ delay: 0.1 }}
             className="text-center mb-12"
           >
             <h2 className="text-5xl md:text-6xl font-bold text-white mb-6">
@@ -88,7 +131,8 @@ export default function HomePage() {
           <VideoGenerationForm onJobCreated={setActiveJobId} />
 
           {/* Active Job Tracker */}
-          {activeJobId && (
+          {/* {true ? ( */}
+          {activeJobId ? (
             <motion.div
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
@@ -96,10 +140,11 @@ export default function HomePage() {
             >
               <VideoJobTracker jobId={activeJobId} />
             </motion.div>
-          )}
+          ) : null}
 
           {/* Recent Videos Gallery */}
           <RecentVideos />
+          <VideoShowcase  />
         </section>
       </div>
     </div>

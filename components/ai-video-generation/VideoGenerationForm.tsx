@@ -47,7 +47,7 @@ function VideoGenerationForm({ onJobCreated }: Props) {
         <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.4 }}
+            transition={{ delay: 0.1 }}
             className="max-w-4xl mx-auto"
         >
             <div className="bg-white/10 backdrop-blur-xl rounded-2xl p-8 border border-white/20">
