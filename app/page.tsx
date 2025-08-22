@@ -1,194 +1,276 @@
+// app/projects/page.tsx
 'use client';
 
-import { BASEURL } from '@/constants/path';
-import { useRouter } from 'next/navigation';
+import { FloatingNav } from '@/components/project/FloatingNav';
+import { ProjectCard } from '@/components/project/ProjectCard';
+import { ProjectListItem } from '@/components/project/ProjectListItem';
+import { ProjectModal } from '@/components/project/ProjectModal';
+import { ProjectSearch } from '@/components/project/ProjectSearch';
+import { ProjectTimeline } from '@/components/project/ProjectTimeline';
+import { PROJECTS } from '@/constants/project';
+import {
+  Calendar,
+  Clock,
+  Code2,
+  Grid3x3,
+  List,
+  Rocket,
+  Search,
+  Star
+} from 'lucide-react';
+import { AnimatePresence, motion } from 'motion/react';
 import { useState } from 'react';
 
-export default function SignInPage() {
-  const [isSignUp, setIsSignUp] = useState(false);
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [name, setName] = useState('');
-  const [error, setError] = useState('');
-  const [loading, setLoading] = useState(false);
-  const router = useRouter();
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setError('');
-    setLoading(true);
-
-    try {
-      const endpoint = isSignUp ? '/auth/register' : '/auth/login';
-      const body = isSignUp
-        ? { email, password, name }
-        : { email, password };
-
-      const response = await fetch(`${BASEURL}${endpoint}`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        credentials: 'include', // Important for cookies
-        body: JSON.stringify(body),
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.message || 'Something went wrong');
-      }
-
-      // Redirect on success
-      router.push('/dashboard');
-    } catch (err) {
-      if (err instanceof Error) {
-        setError(err.message);
-      }
-    } finally {
-      setLoading(false);
+const container = {
+  hidden: { opacity: 0 },
+  show: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.1
     }
-  };
+  }
+};
+
+const item = {
+  hidden: { opacity: 0, y: 20 },
+  show: { opacity: 1, y: 0 }
+};
+
+export default function ProjectsPage() {
+  const [selectedProject, setSelectedProject] = useState<number | null>(null);
+  const [viewMode, setViewMode] = useState<'grid' | 'list' | 'timeline'>('grid');
+  const [filter, setFilter] = useState<string>('all');
+  const [searchQuery, setSearchQuery] = useState('');
+
+  const filteredProjects = PROJECTS.filter(project => {
+    const matchesFilter = filter === 'all' || (filter === 'featured' && project.featured);
+    const matchesSearch = project.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      project.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      project.tags.some(tag => tag.toLowerCase().includes(searchQuery.toLowerCase()));
+    return matchesFilter && matchesSearch;
+  });
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 px-4 py-12 sm:px-6 lg:px-8">
-      <div className="w-full max-w-md space-y-8">
-        <div className="bg-white px-8 py-10 shadow-xl rounded-2xl">
-          <div className="text-center">
-            <h2 className="text-3xl font-bold tracking-tight text-gray-900">
-              {isSignUp ? 'Create your account' : 'Welcome back'}
-            </h2>
-            <p className="mt-2 text-sm text-gray-600">
-              {isSignUp ? 'Start your journey with us' : 'Sign in to your account'}
-            </p>
-          </div>
-
-          <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
-            {error && (
-              <div className="rounded-md bg-red-50 border border-red-200 p-4">
-                <p className="text-sm text-red-800">{error}</p>
-              </div>
-            )}
-
-            <div className="space-y-4">
-              {isSignUp && (
-                <div>
-                  <label htmlFor="name" className="block text-sm font-medium text-gray-700">
-                    Full Name
-                  </label>
-                  <input
-                    id="name"
-                    name="name"
-                    type="text"
-                    required={isSignUp}
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                    className="mt-1 block w-full rounded-lg border border-gray-300 px-3 py-2 text-gray-900 placeholder-gray-400 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
-                    placeholder="John Doe"
-                  />
-                </div>
-              )}
-
-              <div>
-                <label htmlFor="email" className="block text-sm font-medium text-gray-700">
-                  Email address
-                </label>
-                <input
-                  id="email"
-                  name="email"
-                  type="email"
-                  autoComplete="email"
-                  required
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  className="mt-1 block w-full rounded-lg border border-gray-300 px-3 py-2 text-gray-900 placeholder-gray-400 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
-                  placeholder="you@example.com"
-                />
-              </div>
-
-              <div>
-                <label htmlFor="password" className="block text-sm font-medium text-gray-700">
-                  Password
-                </label>
-                <input
-                  id="password"
-                  name="password"
-                  type="password"
-                  autoComplete={isSignUp ? 'new-password' : 'current-password'}
-                  required
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  className="mt-1 block w-full rounded-lg border border-gray-300 px-3 py-2 text-gray-900 placeholder-gray-400 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
-                  placeholder="••••••••"
-                />
-              </div>
-            </div>
-
-            <button
-              type="submit"
-              disabled={loading}
-              className="group relative flex w-full justify-center rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
-            >
-              {loading ? (
-                <svg className="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                </svg>
-              ) : (
-                isSignUp ? 'Create Account' : 'Sign In'
-              )}
-            </button>
-
-            <div className="relative my-6">
-              <div className="absolute inset-0 flex items-center">
-                <div className="w-full border-t border-gray-300" />
-              </div>
-              <div className="relative flex justify-center text-sm">
-                <span className="bg-white px-4 text-gray-500">Or continue with</span>
-              </div>
-            </div>
-
-            <div className="grid grid-cols-2 gap-3">
-              <a
-                href={`${BASEURL}/auth/google`}
-                className="flex items-center justify-center rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition-all duration-200"
-              >
-                <svg className="mr-2 h-5 w-5" viewBox="0 0 24 24">
-                  <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
-                  <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" />
-                  <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" />
-                  <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" />
-                </svg>
-                Google
-              </a>
-
-              <a
-                href={`${BASEURL}/auth/github`}
-                className="flex items-center justify-center rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition-all duration-200"
-              >
-                <svg className="mr-2 h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
-                  <path fillRule="evenodd" d="M10 0C4.477 0 0 4.484 0 10.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0110 4.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.203 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.942.359.31.678.921.678 1.856 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0020 10.017C20 4.484 15.522 0 10 0z" clipRule="evenodd" />
-                </svg>
-                GitHub
-              </a>
-            </div>
-
-            <div className="text-center text-sm">
-              <span className="text-gray-600">
-                {isSignUp ? 'Already have an account?' : "Don't have an account?"}
-              </span>
-              <button
-                type="button"
-                onClick={() => {
-                  setIsSignUp(!isSignUp);
-                  setError('');
-                }}
-                className="ml-1 font-medium text-indigo-600 hover:text-indigo-500 cursor-pointer"
-              >
-                {isSignUp ? 'Sign in' : 'Sign up'}
-              </button>
-            </div>
-          </form>
-        </div>
+    <div className="min-h-screen bg-gray-950 text-white">
+      {/* Animated Background */}
+      <div className="fixed inset-0 -z-10 overflow-hidden">
+        <div className="absolute -top-40 -right-40 w-80 h-80 bg-purple-500 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-blob" />
+        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-pink-500 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-blob animation-delay-2000" />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-80 h-80 bg-blue-500 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-blob animation-delay-4000" />
       </div>
+
+      {/* Header */}
+      <header className="relative z-10 px-4 sm:px-6 lg:px-8 pt-8 pb-16">
+        <div className="max-w-7xl mx-auto ">
+          <motion.div
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="text-center "
+          >
+            {/* TODO: Breadcrumb  will be used alter */}
+            {/* <nav className="flex items-center justify-center space-x-2 text-sm text-gray-400 mb-8">
+              <Link href="/" className="hover:text-white transition">Home</Link>
+              <ChevronRight className="w-4 h-4" />
+              <span className="text-white">Projects</span>
+            </nav> */}
+
+            <h1 className="text-5xl md:text-6xl font-bold mb-6">
+              <span className="bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
+                My Projects
+              </span>
+            </h1>
+            <p className="text-xl text-gray-300 max-w-3xl mx-auto mb-12">
+              Exploring the intersection of design and technology. Here are some of my recent works
+              that showcase my passion for creating beautiful, functional applications.
+            </p>
+
+            {/* Stats */}
+            <div className="flex flex-wrap justify-center gap-8 mb-12">
+              <motion.div
+                whileHover={{ scale: 1.05 }}
+                className="flex items-center space-x-2"
+              >
+                <div className="w-12 h-12 bg-purple-500/20 rounded-lg flex items-center justify-center">
+                  <Rocket className="w-6 h-6 text-purple-400" />
+                </div>
+                <div className="text-left">
+                  <p className="text-2xl font-bold">{PROJECTS.length}</p>
+                  <p className="text-sm text-gray-400">Projects</p>
+                </div>
+              </motion.div>
+              <motion.div
+                whileHover={{ scale: 1.05 }}
+                className="flex items-center space-x-2"
+              >
+                <div className="w-12 h-12 bg-pink-500/20 rounded-lg flex items-center justify-center">
+                  <Code2 className="w-6 h-6 text-pink-400" />
+                </div>
+                <div className="text-left">
+                  <p className="text-2xl font-bold">10+</p>
+                  <p className="text-sm text-gray-400">Technologies</p>
+                </div>
+              </motion.div>
+
+              <motion.div
+                whileHover={{ scale: 1.05 }}
+                className="flex items-center space-x-2"
+              >
+                <div className="w-12 h-12 bg-green-500/20 rounded-lg flex items-center justify-center">
+                  <Calendar className="w-6 h-6 text-green-400" />
+                </div>
+                <div className="text-left">
+                  <p className="text-2xl font-bold">2+</p>
+                  <p className="text-sm text-gray-400">Years Experience</p>
+                </div>
+              </motion.div>
+              {/* TODO: will uncomment it later */}
+              {/* <motion.div
+                whileHover={{ scale: 1.05 }}
+                className="flex items-center space-x-2"
+              >
+                <div className="w-12 h-12 bg-blue-500/20 rounded-lg flex items-center justify-center">
+                  <Star className="w-6 h-6 text-blue-400" />
+                </div>
+                <div className="text-left">
+                  <p className="text-2xl font-bold">6</p>
+                  <p className="text-sm text-gray-400">GitHub Stars</p>
+                </div>
+              </motion.div> */}
+            </div>
+            <ProjectSearch onSearch={setSearchQuery} />
+
+            {/* Controls */}
+            <div className="flex flex-wrap items-center justify-center gap-4">
+              {/* Filter Buttons */}
+              <div className="flex items-center bg-gray-800/50 backdrop-blur rounded-lg p-1">
+                <button
+                  onClick={() => setFilter('all')}
+                  className={`px-4 py-2 rounded-md text-sm font-medium transition ${filter === 'all'
+                    ? 'bg-white text-gray-900'
+                    : 'text-gray-400 hover:text-white'
+                    }`}
+                >
+                  All Projects
+                </button>
+                <button
+                  onClick={() => setFilter('featured')}
+                  className={`px-4 py-2 rounded-md text-sm font-medium transition ${filter === 'featured'
+                    ? 'bg-white text-gray-900'
+                    : 'text-gray-400 hover:text-white'
+                    }`}
+                >
+                  Featured
+                </button>
+              </div>
+
+              {/* View Mode Toggle */}
+              <div className="flex items-center bg-gray-800/50 backdrop-blur rounded-lg p-1">
+                <button
+                  onClick={() => setViewMode('grid')}
+                  className={`p-2 rounded-md transition ${viewMode === 'grid'
+                    ? 'bg-white text-gray-900'
+                    : 'text-gray-400 hover:text-white'
+                    }`}
+                >
+                  <Grid3x3 className="w-4 h-4" />
+                </button>
+                <button
+                  onClick={() => setViewMode('list')}
+                  className={`p-2 rounded-md transition ${viewMode === 'list'
+                    ? 'bg-white text-gray-900'
+                    : 'text-gray-400 hover:text-white'
+                    }`}
+                >
+                  <List className="w-4 h-4" />
+                </button>
+                <button
+                  onClick={() => setViewMode('timeline')}
+                  className={`p-2 rounded-md transition ${viewMode === 'timeline'
+                    ? 'bg-white text-gray-900'
+                    : 'text-gray-400 hover:text-white'
+                    }`}
+                  title="Timeline View"
+                >
+                  <Clock className="w-4 h-4" />
+                </button>
+              </div>
+            </div>
+          </motion.div>
+        </div>
+      </header>
+
+      {/* Projects Grid/List */}
+      <main className="relative z-10 px-4 sm:px-6 lg:px-8 pb-20">
+        <div className="max-w-7xl mx-auto">
+          {viewMode === 'timeline' ? (
+            <ProjectTimeline projects={filteredProjects} />
+          ) :
+            <motion.div
+              variants={container}
+              initial="hidden"
+              animate="show"
+              className={viewMode === 'grid'
+                ? "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
+                : "space-y-8"
+              }
+            >
+              {filteredProjects.map((project, index) => (
+                <motion.div
+                  key={project.id}
+                  variants={item}
+                  layout
+                  onClick={() => setSelectedProject(project.id)}
+                  className="group cursor-pointer"
+                >
+                  {viewMode === 'grid' ? (
+                    <ProjectCard project={project} />
+                  ) : (
+                    <ProjectListItem project={project} />
+                  )}
+                </motion.div>
+              ))}
+            </motion.div>}
+          {/* Empty State */}
+          {filteredProjects.length === 0 && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              className="text-center py-20"
+            >
+              <div className="w-24 h-24 bg-gray-800 rounded-full flex items-center justify-center mx-auto mb-4">
+                <Search className="w-12 h-12 text-gray-600" />
+              </div>
+              <p className="text-gray-400 text-lg">No projects found matching your search</p>
+              <button
+                onClick={() => {
+                  setSearchQuery('');
+                  setFilter('all');
+                }}
+                className="mt-4 text-purple-400 hover:text-purple-300"
+              >
+                Clear filters
+              </button>
+            </motion.div>
+          )}
+        </div>
+      </main>
+
+      {/* Project Modal */}
+      <AnimatePresence>
+        {selectedProject && (
+          <ProjectModal
+            project={PROJECTS.find(p => p.id === selectedProject)!}
+            onClose={() => setSelectedProject(null)}
+          />
+        )}
+      </AnimatePresence>
+
+      {/* Floating Navigation */}
+      <FloatingNav />
     </div>
   );
 }
+
+
+
