@@ -1,16 +1,15 @@
 // components/AuthDialog.tsx
 'use client';
 
-import { useState } from 'react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Loader2, Mail, Chrome, UserCircle, EyeOff, Eye } from 'lucide-react';
-import Link from 'next/link';
-import { useRouter } from 'next/navigation';
-import { AnimatePresence, motion } from 'motion/react';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { BASEURL } from '@/constants/path';
+import { useAuthStore } from '@/stores/authStore';
+import { useQueryClient } from '@tanstack/react-query';
+import { Chrome, UserCircle } from 'lucide-react';
+import { motion } from 'motion/react';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
+import { useState } from 'react';
 
 interface AuthDialogProps {
     open: boolean;
@@ -28,34 +27,12 @@ export function AuthDialog({ open, onOpenChange, onSuccess }: AuthDialogProps) {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
 
+    const { createGuestSession, login, register } = useAuthStore()
+    const queryClient = useQueryClient()
     const isSignUp = mode === 'signup'
 
-    // const handleEmailAuth = async (e: React.FormEvent) => {
-    //     e.preventDefault();
-    //     setLoading(true);
-    //     setError('');
-
-    //     try {
-    //         const endpoint = mode === 'signin' ? '/api/auth/signin' : '/api/auth/signup';
-    //         const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}${endpoint}`, {
-    //             method: 'POST',
-    //             headers: { 'Content-Type': 'application/json' },
-    //             body: JSON.stringify({ email, password }),
-    //         });
-
-    //         if (!response.ok) {
-    //             throw new Error('Authentication failed');
-    //         }
-
-    //         const user = await response.json();
-    //         localStorage.setItem('user', JSON.stringify(user));
-    //         onSuccess(user);
-    //     } catch (err) {
-    //         setError(mode === 'signin' ? 'Invalid credentials' : 'Failed to create account');
-    //     } finally {
-    //         setLoading(false);
-    //     }
-    // };
+    const pathname = usePathname();
+    const searchParams = useSearchParams();
 
     const handleEmailAuth = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -63,27 +40,33 @@ export function AuthDialog({ open, onOpenChange, onSuccess }: AuthDialogProps) {
         setLoading(true);
 
         try {
-            const endpoint = isSignUp ? '/auth/register' : '/auth/login';
-            const body = isSignUp
-                ? { email, password, name }
-                : { email, password };
+            // const endpoint = isSignUp ? '/auth/register' : '/auth/login';
+            // const body = isSignUp
+            //     ? { email, password, name }
+            //     : { email, password };
 
-            const response = await fetch(`${BASEURL}${endpoint}`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                credentials: 'include', // Important for cookies
-                body: JSON.stringify(body),
-            });
+            const signFn = isSignUp ? register : login
 
-            const data = await response.json();
+            await signFn({ email, password, name })
 
-            if (!response.ok) {
-                throw new Error(data.message || 'Something went wrong');
-            }
+            queryClient.invalidateQueries(); // Invalidates ALL queries
 
             // Redirect on success
             // router.push('/dashboard');
             router.back()
+            // const response = await fetch(`${BASEURL}${endpoint}`, {
+            //     method: 'POST',
+            //     headers: { 'Content-Type': 'application/json' },
+            //     credentials: 'include', // Important for cookies
+            //     body: JSON.stringify(body),
+            // });
+
+            // const data = await response.json();
+
+            // if (!response.ok) {
+            //     throw new Error(data.message || 'Something went wrong');
+            // }
+
         } catch (err) {
             if (err instanceof Error) {
                 setError(err.message);
@@ -96,29 +79,28 @@ export function AuthDialog({ open, onOpenChange, onSuccess }: AuthDialogProps) {
     const handleGoogleAuth = async () => {
         // In real app, this would redirect to Google OAuth
         window.location.href = `${BASEURL}/auth/google`;
+
+        // const currentPath = `${pathname}${searchParams.toString() ? `?${searchParams.toString()}` : ''}`;
+
+        // // Encode the redirect URI
+        // const redirectUri = encodeURIComponent(currentPath);
+
+
+
+        // // Redirect to Google auth with redirect_uri parameter
+        // window.location.href = `${process.env.NEXT_PUBLIC_API_URL
+        //     }/auth/google?redirect_uri=${redirectUri}`;
     };
 
     const handleGuestLogin = async () => {
         setLoading(true);
         try {
-            const guestUser = {
-                email: 'guest@example.com',
-                name: 'Guest User',
-                isGuest: true,
-            };
+            await createGuestSession()
+            // Redirect on success
+            // router.push('/dashboard');
+            queryClient.invalidateQueries(); // Invalidates ALL queries
 
-            // In real app, you'd call your backend to create a guest session
-            const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/auth/guest`, {
-                method: 'POST',
-            });
-
-            if (!response.ok) {
-                throw new Error('Failed to create guest session');
-            }
-
-            const user = await response.json();
-            localStorage.setItem('user', JSON.stringify(user));
-            onSuccess(user);
+            router.back();
         } catch (err) {
             setError('Failed to login as guest');
         } finally {
@@ -169,7 +151,7 @@ export function AuthDialog({ open, onOpenChange, onSuccess }: AuthDialogProps) {
                     </div>
 
                     {/* Email/Password Form */}
-                    <form onSubmit={handleEmailAuth} className="space-y-4">
+                    {/* <form onSubmit={handleEmailAuth} className="space-y-4">
                         <div className="space-y-2">
                             <Label htmlFor="email" className="text-gray-300">Email</Label>
                             <Input
@@ -184,7 +166,6 @@ export function AuthDialog({ open, onOpenChange, onSuccess }: AuthDialogProps) {
                             />
                         </div>
 
-                        {/* Enhanced password input with show/hide */}
                         <div className="space-y-2">
                             <Label htmlFor="password" className="text-gray-300">Password</Label>
                             <div className="relative">
@@ -208,7 +189,6 @@ export function AuthDialog({ open, onOpenChange, onSuccess }: AuthDialogProps) {
                             </div>
                         </div>
 
-                        {/* Add name field for signup mode */}
                         <AnimatePresence>
                             {mode === 'signup' && (
                                 <motion.div
@@ -267,7 +247,7 @@ export function AuthDialog({ open, onOpenChange, onSuccess }: AuthDialogProps) {
                                 </>
                             )}
                         </Button>
-                    </form>
+                    </form> */}
                     {/* Google Auth */}
                     <Button
                         onClick={handleGoogleAuth}
@@ -280,7 +260,7 @@ export function AuthDialog({ open, onOpenChange, onSuccess }: AuthDialogProps) {
                     </Button>
 
                     {/* Toggle between Sign In and Sign Up */}
-                    <div className="text-center text-sm">
+                    {/* <div className="text-center text-sm">
                         <span className="text-gray-400">
                             {mode === 'signin' ? "Don't have an account? " : 'Already have an account? '}
                         </span>
@@ -294,7 +274,7 @@ export function AuthDialog({ open, onOpenChange, onSuccess }: AuthDialogProps) {
                         >
                             {mode === 'signin' ? 'Sign Up' : 'Sign In'}
                         </button>
-                    </div>
+                    </div> */}
                 </div>
             </DialogContent>
         </Dialog>

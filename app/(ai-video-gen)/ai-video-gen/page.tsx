@@ -4,8 +4,11 @@ import { RecentVideos } from '@/components/ai-video-generation/RecentVideos';
 import VideoGenerationForm from '@/components/ai-video-generation/VideoGenerationForm';
 import { VideoJobTracker } from '@/components/ai-video-generation/VideoJobTracker';
 import { VideoShowcase } from '@/components/ai-video-generation/VideoShowCase';
+import apiClient from '@/constants/apiClient';
 import { videoApi } from '@/lib/api/ai-video-generation.service';
-import { Loader2, User } from 'lucide-react';
+import { useAuthStore, User } from '@/stores/authStore';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { Loader2, UserIcon } from 'lucide-react';
 import { motion } from 'motion/react';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
@@ -13,8 +16,39 @@ import { useEffect, useState } from 'react';
 export default function HomePage() {
   const [activeJobId, setActiveJobId] = useState<string | null>(null);
   const [loading, setLoading] = useState(false)
-  const [user, setUser] = useState(null);
+  const { loading: authLoading, user, setUser, logOut } = useAuthStore();
 
+  const queryClient = useQueryClient()
+
+  const getUser = async () => {
+    try {
+      const data: User = await apiClient.get("/auth/me");
+      setUser(data);
+      return data
+    } catch (err) {
+      // setError('Failed to load recent videos');
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  const { data: userData, isPending: userLoading } = useQuery(
+    {
+      queryKey: ["user"],
+      queryFn: () => getUser()
+    }
+  )
+  console.log(userData, "userData")
+
+  const logOutUser = async () => {
+    await logOut()
+    queryClient.invalidateQueries()
+  }
+
+  useEffect(() => {
+    fetchProcessingVideos()
+  }, [user])
 
   const fetchProcessingVideos = async () => {
     try {
@@ -31,19 +65,9 @@ export default function HomePage() {
       setLoading(false);
     }
   };
-  const fetchUser = () => {
 
-  }
-  useEffect(() => {
-    // Check if user is logged in
-    // const savedUser = localStorage.getItem('user');
-    // if (savedUser) {
-    //   setUser(JSON.parse(savedUser));
-    // }
-    fetchProcessingVideos()
-  }, [])
 
-  if (loading) {
+  if (loading || authLoading || userLoading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900 flex items-center justify-center">
         <div className="text-center">
@@ -83,14 +107,11 @@ export default function HomePage() {
                 {user ? (
                   <div className="flex items-center space-x-3">
                     <div className="flex items-center space-x-2 text-white/70">
-                      <User className="w-4 h-4" />
+                      <UserIcon className="w-4 h-4" />
                       <span className="text-sm">{user.email}</span>
                     </div>
                     <button
-                      onClick={() => {
-                        localStorage.removeItem('user');
-                        setUser(null);
-                      }}
+                      onClick={logOutUser}
                       className="bg-white/10 hover:bg-white/20 text-white px-4 py-2 rounded-lg backdrop-blur transition text-sm"
                     >
                       Sign Out
@@ -143,8 +164,9 @@ export default function HomePage() {
           ) : null}
 
           {/* Recent Videos Gallery */}
-          <RecentVideos />
-          <VideoShowcase  />
+          {user ? <RecentVideos /> : null}
+          {/* {isInitialized ? <RecentVideos /> : null} */}
+          <VideoShowcase />
         </section>
       </div>
     </div>

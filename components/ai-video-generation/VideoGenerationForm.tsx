@@ -3,9 +3,10 @@
 
 import { useState } from 'react';
 // import { motion } from 'framer-motion';
-import { motion } from "motion/react"
-import { Sparkles, Wand2, Loader2 } from 'lucide-react';
 import { videoApi } from '@/lib/api/ai-video-generation.service';
+import { Loader2, Sparkles, Wand2 } from 'lucide-react';
+import { motion } from "motion/react";
+import { useRouter } from 'next/navigation';
 
 interface Props {
     onJobCreated: (jobId: string) => void;
@@ -15,6 +16,7 @@ function VideoGenerationForm({ onJobCreated }: Props) {
     const [isLoading, setIsLoading] = useState(false);
     const [selectedStyle, setSelectedStyle] = useState('cinematic');
     const [error, setError] = useState<string | null>(null);
+    const router = useRouter()
 
     const videoStyles = [
         { id: 'cinematic', name: 'Cinematic', icon: '🎬', color: 'from-orange-500 to-red-500' },
@@ -36,6 +38,10 @@ function VideoGenerationForm({ onJobCreated }: Props) {
             onJobCreated(data.jobId);
             setPrompt('');
         } catch (error) {
+            console.log("error",error)
+            if(error.response.status == 401){
+                router.push("/auth/signin")
+            }
             setError('Failed to generate video. Please try again.');
             console.error('Failed to generate video:', error);
         } finally {

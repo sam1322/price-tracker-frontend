@@ -7,6 +7,7 @@ import Link from 'next/link';
 import { useState } from 'react';
 import { VideoPlayerModal } from './VideoPlayerModal';
 import { Video } from './VideoShowCaseWithApi';
+import { useAuthStore } from '@/stores/authStore';
 // import { VideoPlayerModal } from './VideoPlayerModal';
 
 // interface ShowcaseVideo {
@@ -65,6 +66,7 @@ export function VideoShowcase() {
     const [selectedVideo, setSelectedVideo] = useState<Video | null>(null);
     const [selectedCategory, setSelectedCategory] = useState('All');
     const [hoveredId, setHoveredId] = useState<string | null>(null);
+    const { user } = useAuthStore()
 
     const filteredVideos = selectedCategory === 'All'
         ? SHOWCASE_VIDEOS
@@ -246,7 +248,7 @@ export function VideoShowcase() {
                 )}
 
                 {/* Call to Action */}
-                <motion.div
+                {user ? null : <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.6 }}
@@ -266,7 +268,7 @@ export function VideoShowcase() {
                             Get Started Free
                         </Link>
                     </div>
-                </motion.div>
+                </motion.div>}
             </div>
 
             {/* Video Modal */}

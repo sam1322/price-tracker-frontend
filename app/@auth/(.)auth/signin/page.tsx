@@ -1,5 +1,6 @@
 "use client"; // If using client-side features like state for the modal
 import { AuthDialog } from "@/components/AuthDialog";
+import Providers from "@/components/Provider";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
@@ -20,6 +21,8 @@ export default function SignInModal() {
     //     <button onClick={handleClose} cur>Close</button>
     //   </div>
     // </div>
-    <AuthDialog open={true} onOpenChange={handleClose} onSuccess={(user) => console.log(user)} />
+    <Providers>
+      <AuthDialog open={true} onOpenChange={handleClose} onSuccess={(user) => console.log(user)} />
+    </Providers>
   );
 }

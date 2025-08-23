@@ -15,7 +15,7 @@ const apiClient: AxiosInstance = axios.create({
     headers: {
         'Content-Type': 'application/json',
     },
-    withCredentials:true
+    withCredentials: true
 });
 
 // Request interceptor with TypeScript
@@ -36,11 +36,16 @@ apiClient.interceptors.response.use(
         // return response.data; // Return only the data part
     },
     (error: AxiosError<ApiResponse>) => {
+
         const errorMessage = error.response?.data?.message ||
             error.message ||
             'Request failed';
         console.error('API Error:', errorMessage);
-        return Promise.reject(new Error(errorMessage));
+        // TODO: uncomment this later
+        // if (error.response?.status == 401) {
+        //     window.location.href = "/auth/signin"
+        // }
+        return Promise.reject(error);
     }
 );
 

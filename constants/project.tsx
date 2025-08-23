@@ -19,7 +19,8 @@ export const PROJECTS: Project[] = [
         image: "https://res.cloudinary.com/dw5xqmxyu/image/upload/v1755846072/Create-Next-App-08-22-2025_12_28_PM_qiqpu5.png", // Add your project images
         tags: ["Next.js", "Nest.js", "AI/ML", "Prisma", "TypeScript", "Kakfa"],
         type: 'ai',
-        liveUrl: "https://project.sam-tech.xyz/ai-video-gen",
+        // liveUrl: "https://project.sam-tech.xyz/ai-video-gen",
+        liveUrl: "/ai-video-gen",
         githubUrl: "https://github.com/sam1322/price-tracker-frontend", // there is also a frontend github
         repositories: [
             {
@@ -50,7 +51,8 @@ export const PROJECTS: Project[] = [
         image: "https://res.cloudinary.com/dw5xqmxyu/image/upload/v1755846071/Create-Next-App-07-24-2025_05_24_PM-2_xjs8xm.png",
         tags: ["Nextjs", "Nestjs", "Prisma", "Postgres", "Playwright", "Typescript"],
         type: 'fullstack',
-        liveUrl: "https://project.sam-tech.xyz/price-tracker",
+        liveUrl: "/price-tracker",
+        // liveUrl: "https://project.sam-tech.xyz/price-tracker",
         githubUrl: "https://github.com/sam1322/price-tracker-backend",
         repositories: [
             {
