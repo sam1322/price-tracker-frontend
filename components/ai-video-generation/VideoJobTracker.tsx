@@ -198,8 +198,7 @@ export function VideoJobTracker({ jobId }: { jobId: string }) {
                 )} */}
                 {/* Success State */}
                 <AnimatePresence>
-                    {true ? (
-                        // {job.status === 'COMPLETED' && job.videoUrl ? (
+                    {job.status === 'COMPLETED' && job.videoUrl ? (
                         <motion.div
                             initial={{ opacity: 0, y: 20 }}
                             animate={{ opacity: 1, y: 0 }}
@@ -213,6 +212,7 @@ export function VideoJobTracker({ jobId }: { jobId: string }) {
                                     src={job.videoUrl}
                                     className="w-full h-full object-cover"
                                     // poster={job.thumbnailUrl}
+                                    controls
                                     muted
                                     loop
                                     autoPlay
