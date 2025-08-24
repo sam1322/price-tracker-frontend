@@ -11,18 +11,16 @@ import Image from 'next/image';
 import { Button } from "../ui/button";
 
 // export const ProjectCard = ({ project }: { project }) => {
-export const ProjectCard = ({ project }:{project:Project}) => {
+export const ProjectCard = ({ project }: { project: Project }) => {
 
   const getRepositories = () => {
-    let repos: RepositoryType[] = [];
-
-
+    const repos: RepositoryType[] = [];
 
     // Fallback to old githubUrl for backward compatibility
     // if (project.repositories && project.repositories.length > 0) {
     //   repos = project.repositories;
     // }
-    if (repos.length == 0  && project.githubUrl) {
+    if (repos.length == 0 && project.githubUrl) {
       repos.push({ name: 'repository', githubUrl: project.githubUrl });
     }
 
@@ -185,7 +183,7 @@ export const ProjectCard = ({ project }:{project:Project}) => {
 
           {/* Tags */}
           <div className="flex flex-wrap gap-2 mb-4">
-            {project.tags.slice(0, 3).map((tag:string) => (
+            {project.tags.slice(0, 3).map((tag: string) => (
               <span
                 key={tag}
                 className="px-2 py-1 bg-gray-800 text-gray-400 text-xs rounded-md"

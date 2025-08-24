@@ -1,39 +1,15 @@
-
-// "use client"; // If using client-side features like state for the modal
-// import { AuthDialog } from "@/components/AuthDialog";
-// import { useRouter } from "next/navigation";
-// import { useState } from "react";
-
-// export default function SignInModal() {
-//     const router = useRouter();
-//     const [open, setOpen] = useState(true)
-
-//     const handleClose = () => {
-//         router.back(); // Close the modal by navigating back
-//         setOpen(false)
-//     };
-
-//     return (
-//         <div className="min-h-screen bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900">
-//             <div className="absolute inset-0 bg-[url('/grid.svg')] bg-center [mask-image:linear-gradient(180deg,white,rgba(255,255,255,0))]"></div>
-
-//             <AuthDialog open={true} onOpenChange={handleClose} onSuccess={(user) => console.log(user)} />
-//         </div>
-//     );
-// }
-
-
 'use client';
 
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
-import { AnimatePresence, motion } from 'motion/react';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Chrome, Mail, UserCircle, Loader2, ArrowLeft, EyeOff, Eye } from 'lucide-react';
-import Link from 'next/link';
 import { BASEURL } from '@/constants/path';
+import { useAuthStore } from '@/stores/authStore';
+import { useQueryClient } from '@tanstack/react-query';
+import { ArrowLeft, Chrome, UserCircle } from 'lucide-react';
+import { motion } from 'motion/react';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { useState } from 'react';
+import { toast } from 'sonner';
 
 export default function SignInPage() {
     const router = useRouter();
@@ -44,48 +20,28 @@ export default function SignInPage() {
     const [showPassword, setShowPassword] = useState(false);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
+    const queryClient = useQueryClient()
+    const { createGuestSession, login, register } = useAuthStore()
 
     const handleGuestLogin = async () => {
         setLoading(true);
-        setError('');
         try {
-            // Your guest login logic
-            router.push('/dashboard');
+            await createGuestSession()
+            // Redirect on success
+            queryClient.invalidateQueries(); // Invalidates ALL queries
+
+            router.push("/")
+            // router.back();
         } catch (err) {
-            setError('Failed to login as guest');
+            console.log("guest erorr", err)
+            toast.error('Failed to login as guest')
         } finally {
             setLoading(false);
         }
     };
 
+
     const isSignUp = mode === 'signup'
-
-    // const handleEmailAuth = async (e: React.FormEvent) => {
-    //     e.preventDefault();
-    //     setLoading(true);
-    //     setError('');
-
-    //     try {
-    //         const endpoint = mode === 'signin' ? '/api/auth/signin' : '/api/auth/signup';
-    //         const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}${endpoint}`, {
-    //             method: 'POST',
-    //             headers: { 'Content-Type': 'application/json' },
-    //             body: JSON.stringify({ email, password }),
-    //         });
-
-    //         if (!response.ok) {
-    //             throw new Error('Authentication failed');
-    //         }
-
-    //         const user = await response.json();
-    //         localStorage.setItem('user', JSON.stringify(user));
-    //         onSuccess(user);
-    //     } catch (err) {
-    //         setError(mode === 'signin' ? 'Invalid credentials' : 'Failed to create account');
-    //     } finally {
-    //         setLoading(false);
-    //     }
-    // };
 
     const handleEmailAuth = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -93,23 +49,11 @@ export default function SignInPage() {
         setLoading(true);
 
         try {
-            const endpoint = isSignUp ? '/auth/register' : '/auth/login';
-            const body = isSignUp
-                ? { email, password, name }
-                : { email, password };
+            const signFn = isSignUp ? register : login
 
-            const response = await fetch(`${BASEURL}${endpoint}`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                credentials: 'include', // Important for cookies
-                body: JSON.stringify(body),
-            });
+            await signFn({ email, password, name })
 
-            const data = await response.json();
-
-            if (!response.ok) {
-                throw new Error(data.message || 'Something went wrong');
-            }
+            queryClient.invalidateQueries(); // Invalidates ALL queries
 
             // Redirect on success
             // router.push('/dashboard');
@@ -218,7 +162,7 @@ export default function SignInPage() {
                             </div>
 
                             {/* Email/Password Form */}
-                            <form onSubmit={handleEmailAuth} className="space-y-4">
+                            {/* <form onSubmit={handleEmailAuth} className="space-y-4">
                                 <div className="space-y-2">
                                     <Label htmlFor="email" className="text-gray-300">Email</Label>
                                     <Input
@@ -233,7 +177,6 @@ export default function SignInPage() {
                                     />
                                 </div>
 
-                                {/* Enhanced password input with show/hide */}
                                 <div className="space-y-2">
                                     <Label htmlFor="password" className="text-gray-300">Password</Label>
                                     <div className="relative">
@@ -257,7 +200,6 @@ export default function SignInPage() {
                                     </div>
                                 </div>
 
-                                {/* Add name field for signup mode */}
                                 <AnimatePresence>
                                     {mode === 'signup' && (
                                         <motion.div
@@ -318,7 +260,7 @@ export default function SignInPage() {
                                         </>
                                     )}
                                 </Button>
-                            </form>
+                            </form> */}
 
                             {/* Google Auth */}
                             <Button

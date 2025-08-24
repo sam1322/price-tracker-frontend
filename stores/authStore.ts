@@ -1,6 +1,7 @@
 // stores/authStore.ts
 import apiClient from '@/constants/apiClient';
 import { generateFingerprint } from '@/lib/fingerprint';
+import axios from 'axios';
 import { create } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';
 
@@ -77,7 +78,12 @@ export const useAuthStore = create<AuthState>()(
                 } catch (error) {
                     console.error('Failed to create guest session:', error);
                     // Fallback to basic guest session
-                    await createBasicGuestSession(set);
+                    if (axios.isAxiosError(error)) {
+                        console.error('Axios error occurred:', error?.response?.data);
+                        throw error
+                    } else {
+                        await createBasicGuestSession(set);
+                    }
                 }
             },
 

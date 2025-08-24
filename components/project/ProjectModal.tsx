@@ -135,6 +135,7 @@ export const ProjectModal = ({
                   <ExternalLink className="w-4 h-4" />
                 </a>
                 {repositories.map((item) => <a
+                  key={item.githubUrl}
                   href={item.githubUrl}
                   target="_blank"
                   rel="noopener noreferrer"

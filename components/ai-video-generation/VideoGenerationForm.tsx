@@ -7,6 +7,7 @@ import { videoApi } from '@/lib/api/ai-video-generation.service';
 import { Loader2, Sparkles, Wand2 } from 'lucide-react';
 import { motion } from "motion/react";
 import { useRouter } from 'next/navigation';
+import axios from 'axios';
 
 interface Props {
     onJobCreated: (jobId: string) => void;
@@ -38,8 +39,8 @@ function VideoGenerationForm({ onJobCreated }: Props) {
             onJobCreated(data.jobId);
             setPrompt('');
         } catch (error) {
-            console.log("error",error)
-            if(error.response.status == 401){
+            console.log("error", error)
+            if (axios.isAxiosError(error) && error.response?.status == 401) {
                 router.push("/auth/signin")
             }
             setError('Failed to generate video. Please try again.');
@@ -70,8 +71,8 @@ function VideoGenerationForm({ onJobCreated }: Props) {
                                     whileTap={{ scale: 0.95 }}
                                     onClick={() => setSelectedStyle(style.id)}
                                     className={`p-4 rounded-xl border-2 transition-all ${selectedStyle === style.id
-                                            ? 'border-white bg-white/20'
-                                            : 'border-white/20 bg-white/5 hover:bg-white/10'
+                                        ? 'border-white bg-white/20'
+                                        : 'border-white/20 bg-white/5 hover:bg-white/10'
                                         }`}
                                 >
                                     <div className="text-3xl mb-2">{style.icon}</div>

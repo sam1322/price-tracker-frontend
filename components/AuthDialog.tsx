@@ -4,17 +4,18 @@
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { BASEURL } from '@/constants/path';
-import { useAuthStore } from '@/stores/authStore';
+import { useAuthStore, User } from '@/stores/authStore';
 import { useQueryClient } from '@tanstack/react-query';
 import { Chrome, UserCircle } from 'lucide-react';
 import { motion } from 'motion/react';
-import { usePathname, useRouter, useSearchParams } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import { useState } from 'react';
+import { toast } from 'sonner';
 
 interface AuthDialogProps {
     open: boolean;
     onOpenChange: (open: boolean) => void;
-    onSuccess: (user: any) => void;
+    onSuccess: (user: User) => void;
 }
 
 export function AuthDialog({ open, onOpenChange, onSuccess }: AuthDialogProps) {
@@ -30,9 +31,6 @@ export function AuthDialog({ open, onOpenChange, onSuccess }: AuthDialogProps) {
     const { createGuestSession, login, register } = useAuthStore()
     const queryClient = useQueryClient()
     const isSignUp = mode === 'signup'
-
-    const pathname = usePathname();
-    const searchParams = useSearchParams();
 
     const handleEmailAuth = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -102,7 +100,8 @@ export function AuthDialog({ open, onOpenChange, onSuccess }: AuthDialogProps) {
 
             router.back();
         } catch (err) {
-            setError('Failed to login as guest');
+            console.error(err)
+            toast.error('Failed to login as guest')
         } finally {
             setLoading(false);
         }

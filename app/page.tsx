@@ -138,7 +138,7 @@ export default function ProjectsPage() {
                 </div>
               </motion.div> */}
             </div>
-            <ProjectSearch onSearch={setSearchQuery} />
+          <ProjectSearch searchQuery={searchQuery} onSearch={setSearchQuery} />
 
             {/* Controls */}
             <div className="flex flex-wrap items-center justify-center gap-4">

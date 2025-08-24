@@ -94,7 +94,7 @@ export function VideoShowcase() {
                     </h2>
                     <p className="text-xl text-white/70 max-w-3xl mx-auto">
                         Explore stunning videos created by our AI. From cinematic scenes to abstract art,
-                        see what's possible with just a text prompt.
+                        see what&apos;s possible with just a text prompt.
                     </p>
                 </motion.div>
 

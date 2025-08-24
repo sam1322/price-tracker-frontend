@@ -1,6 +1,7 @@
 // utils/fingerprint.ts
 import FingerprintJS from '@fingerprintjs/fingerprintjs'
 
+/* eslint-disable  @typescript-eslint/no-explicit-any */
 let fpPromise: Promise<any> | null = null;
 
 export const initFingerprint = () => {

@@ -1,5 +1,6 @@
 
 
+import { Project } from '@/lib/types/projectTypes';
 import {
     Calendar
 } from 'lucide-react';
